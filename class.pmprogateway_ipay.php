@@ -152,7 +152,7 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                     "eml",
                     "vid",
                     "curr",
-                    "cbk" => " http://3942f0cd.ngrok.io/Collo/log.php",
+                    "cbk",
                     "cst",
                     "crl",
                     "hash" => "demo"
@@ -234,14 +234,7 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                             <input type="text" id="hash" name="hash" size="60" value="<?php echo esc_attr($values['hash'])?>" />
                         </td>
                     </tr>
-                    <tr class="gateway gateway_ipay" <?php if($gateway != "ipay") { ?>style="display: none;"<?php } ?>>
-                        <th scope="row" valign="top">
-                            <label for="live"><?php _e('Live/Demo', 'pmpro');?>:</label>
-                        </th>
-                        <td>
-                            <input type="text" id="live" name="live" size="60" value="<?php echo esc_attr($values['Mpesa'])?>" />
-                        </td>
-                    </tr>
+                   
                     
                     <?php
                 }
