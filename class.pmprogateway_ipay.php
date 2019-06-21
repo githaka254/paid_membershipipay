@@ -98,8 +98,8 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                     //show our submit buttons
                     ?>
                     <span id="pmpro_submit_span">
-                    <input type="hidden" name="submit-checkout" value="1" />		
-                    <input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if ($pmpro_requirebilling) { _e('Check Out with ipay', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />		
+                    <input type="hidden" name="submit-checkout" value="1" />        
+                    <input type="submit" class="pmpro_btn pmpro_btn-submit-checkout" value="<?php if ($pmpro_requirebilling) { _e('Check Out with ipay', 'pmpro'); } else { _e('Submit and Confirm', 'pmpro');}?> &raquo;" />       
                     </span>
                     <?php
                 
@@ -144,24 +144,24 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                 static function getGatewayOptions() 
                 {
                     $options = array (
-                    "live",
-                    "oid",
-                    "inv",
-                    "ttl",
-                    "tel",
-                    "eml",
-                    "vid",
-                    "curr",
-                    "cbk",
-                    "cst",
-                    "crl",
-                    "hash" => "demo"
+                    "live" => "0",
+                    "oid" => "",
+                    "inv" => "",
+                    "ttl" => "",
+                    "tel" => "",
+                    "eml" => "",
+                    "vid" => 'demo',
+                    "curr" => "KES",
+                    "cbk" => " http://3942f0cd.ngrok.io/Collo/log.php",
+                    "cst" => "1",
+                    "crl" => "0",
+                    "hsh" => "demo"
          
 
-    //             $dataString = '0' . $requestParams['oid'] . $requestParams['inv'] . $requestParams['ttl'] . $requestParams['tel'] . $requestParams['eml']
-    // . 'demo' . 'KES' . $requestParams['cbk'] . '1' . '0';
-    //             $hashkey = "demoCHANGED";
-    //             $hashid = hash_hmac("sha1", $dataString, $hashkey);
+        // $dataString = '0' . $requestParams['oid'] . $requestParams['inv'] . $requestParams['ttl'] . $requestParams['tel'] . $requestParams['eml']
+     //. 'demo' . 'KES' . $requestParams['cbk'] . '1' . '0';
+            //    $hashkey = "demoCHANGED";
+             // $hashid = hash_hmac("sha1", $dataString, $hashkey);
 
                     );
 
@@ -228,13 +228,20 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                     </tr>
                     <tr class="gateway gateway_ipay" <?php if($gateway != "ipay") { ?>style="display: none;"<?php } ?>>
                         <th scope="row" valign="top">
-                            <label for="hash" value="demoCHANGED"><?php _e('Security Key', 'pmpro');?>:</label>
+                            <label for="hsh" value="demoCHANGED"><?php _e('Security Key', 'pmpro');?>:</label>
                         </th>
                         <td>
-                            <input type="text" id="hash" name="hash" size="60" value="<?php echo esc_attr($values['hash'])?>" />
+                            <input type="text" id="hsh" name="hsh" size="60" value="<?php echo esc_attr($values['hsh'])?>" />
                         </td>
                     </tr>
-                   
+                    <tr class="gateway gateway_ipay" <?php if($gateway != "ipay") { ?>style="display: none;"<?php } ?>>
+                        <th scope="row" valign="top">
+                            <label for="live"><?php _e('Live', 'pmpro');?>:</label>
+                        </th>
+                        <td>
+                            <input type="checkbox" id="live" name="live" size="60" value="<?php echo esc_attr($values['0'])?>" />
+                        </td>
+                    </tr>
                     
                     <?php
                 }
@@ -315,18 +322,13 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                     // print_r(json_encode($order)); exit;
                     global $wp;
 
-                    $mode = pmpro_getOption("cbk");
+                    $mode = pmpro_getOption("gateway_environment");
                     if ($mode == 'sandbox') {
-                        $key = pmpro_getOption("mer");
-                          $key = pmpro_getOption("vid");
-                        $skey = pmpro_getOption("vid");
-						  $skey = pmpro_getOption("cur");
-						  $skey = pmpro_getOption("hash");
-						  $skey = pmpro_getOption("oid");
-						
+                        $key = pmpro_getOption("vid");
+                        $skey = pmpro_getOption("hsh");
                     } else {
-                        $key = pmpro_getOption("hash");
-                        $skey = pmpro_getOption("oid");
+                        $key = pmpro_getOption("vid");
+                        $skey = pmpro_getOption("hsh");
                     }
                     if ($key  == '' || $skey == '') {
                         echo "Api keys not set";
@@ -409,7 +411,7 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                                 }
                             }
 
-                        }
+                     }
                         
                     } // end of subscription setting and plan
 
@@ -423,7 +425,7 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
 
                     $currency = pmpro_getOption("currency");
                     
-                    $ipay_url = 'https://apis.ipayafrica.com/payments/v2/billing/fund';
+                    $ipay_url = 'https://api.ipaypay.co/flwv3-pug/getpaidx/api/v2/hosted/pay';
                     $headers = array(
                         'Content-Type'  => 'application/json'
                     );
@@ -434,7 +436,7 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                         'customer_email'        => $order->Email,
                         'amount'                => $amount,
                         'txref'                 => $order->code,
-				        'PBFPubKey'             => $key,
+                        'PBFPubKey'             => $key,
                         'currency'              => $currency,
                         'payment_plan'          => $planid,
                         'redirect_url'          => pmpro_url("confirmation", "?level=" . $order->membership_level->id)
@@ -604,13 +606,15 @@ if (!function_exists('ipay_Pmp_Gateway_load')) {
                                     
                             $mode = pmpro_getOption("gateway_environment");
                             if ($mode == 'sandbox') {
-                                $key = pmpro_getOption("hash");
+                                $key = pmpro_getOption("vid");
+								$key = pmpro_getOption("hsh");
                             } else {
                                 $key = pmpro_getOption("vid");
+								$key = pmpro_getOption("hsh");
 
                             }
 
-                            $ipay_url = 'https://apis.ipayafrica.com/payments/v2/billing/fund;
+                            $ipay_url = 'https://api.ipaypay.co/flwv3-pug/getpaidx/api/v2/verify';
                             $headers = array(
                                 'Content-Type' => 'application/json'
                             );
